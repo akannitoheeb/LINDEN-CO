@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Linden & Co.</title>
+<style>
+:root{
+  --bg:#faf9f7; --surface:#ffffff; --ink:#1a1a1a; --sub:#6b6b6b;
+  --line:#e7e3dd; --accent:#9c7b4f; --accent-ink:#ffffff;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15130f; --surface:#1e1b16; --ink:#f3efe8; --sub:#b0a99c;
+    --line:#332e26; --accent:#c9a46a; --accent-ink:#15130f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15130f; --surface:#1e1b16; --ink:#f3efe8; --sub:#b0a99c;
+  --line:#332e26; --accent:#c9a46a; --accent-ink:#15130f;
+  color-scheme: dark;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:Georgia,'Times New Roman',serif;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+header{
+  position:sticky; top:0; z-index:5; background:var(--bg);
+  border-bottom:1px solid var(--line);
+  padding:18px 20px calc(18px); padding-top:calc(18px + env(safe-area-inset-top,0px));
+  display:flex; justify-content:space-between; align-items:center;
+}
+.logo{font-size:22px; letter-spacing:2px; font-weight:bold;}
+.logo span{color:var(--accent);}
+nav a{color:var(--sub); text-decoration:none; margin-left:18px; font-size:14px; letter-spacing:1px;}
+.hero{text-align:center; padding:70px 20px 50px;}
+.hero h1{font-size:clamp(28px,5vw,46px); margin:0 0 14px; letter-spacing:1px;}
+.hero p{color:var(--sub); max-width:520px; margin:0 auto 24px; font-family:Arial,sans-serif;}
+.btn{
+  display:inline-block; background:var(--accent); color:var(--accent-ink);
+  padding:13px 30px; text-decoration:none; font-family:Arial,sans-serif;
+  letter-spacing:1px; font-size:13px; border:none; cursor:pointer; border-radius:2px;
+}
+.btn.outline{background:transparent; border:1px solid var(--accent); color:var(--ink);}
+section{padding:40px 20px; max-width:1100px; margin:0 auto;}
+h2{text-align:center; font-size:26px; letter-spacing:1px; margin-bottom:30px;}
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:22px;}
+.card{background:var(--surface); border:1px solid var(--line); overflow:hidden; border-radius:4px;}
+.thumb{
+  aspect-ratio:1/1; display:flex; align-items:center; justify-content:center;
+  color:#fff; font-family:Arial,sans-serif; font-size:13px; letter-spacing:1px;
+  background:linear-gradient(135deg,var(--accent),#4a3a24);
+}
+.card .info{padding:14px;}
+.card h3{margin:0 0 4px; font-size:16px;}
+.card .price{color:var(--accent); font-family:Arial,sans-serif; font-weight:bold; margin:0 0 10px;}
+.card .cat{font-family:Arial,sans-serif; font-size:11px; color:var(--sub); text-transform:uppercase; letter-spacing:1px;}
+.empty{text-align:center; color:var(--sub); font-family:Arial,sans-serif; padding:30px;}
+.signup{background:var(--surface); border-top:1px solid var(--line); border-bottom:1px solid var(--line); text-align:center;}
+.signup form{display:flex; gap:10px; max-width:380px; margin:18px auto 0; flex-wrap:wrap; justify-content:center;}
+.signup input[type=email]{
+  flex:1; min-width:200px; padding:12px; border:1px solid var(--line); background:var(--bg); color:var(--ink);
+  font-family:Arial,sans-serif; border-radius:2px;
+}
+footer{text-align:center; padding:30px 20px; color:var(--sub); font-family:Arial,sans-serif; font-size:12px;}
+#adminBtn{
+  position:fixed; bottom:16px; right:16px; z-index:9;
+  background:var(--ink); color:var(--bg); border:none; padding:10px 16px;
+  border-radius:20px; font-family:Arial,sans-serif; font-size:12px; cursor:pointer; opacity:.85;
+}
+#adminPanel{
+  position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:10;
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+#adminPanel.open{display:flex;}
+.panelBox{
+  background:var(--surface); max-width:420px; width:100%; padding:24px;
+  border-radius:6px; max-height:90vh; overflow:auto; font-family:Arial,sans-serif;
+}
+.panelBox h3{margin-top:0; font-family:Georgia,serif;}
+.panelBox label{display:block; font-size:12px; color:var(--sub); margin:12px 0 4px;}
+.panelBox input,.panelBox textarea{
+  width:100%; padding:9px; border:1px solid var(--line); background:var(--bg); color:var(--ink); border-radius:3px;
+}
+.panelBox textarea{resize:vertical; min-height:50px;}
+.panelRow{display:flex; gap:10px; margin-top:18px;}
+.msg{font-size:12px; margin-top:8px; color:var(--sub); font-family:Arial,sans-serif;}
+.existing{margin-top:18px; border-top:1px solid var(--line); padding-top:12px;}
+.existing li{display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-bottom:1px solid var(--line);}
+.existing button{background:none; border:none; color:#b24; cursor:pointer; font-size:12px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">LINDEN <span>&</span> CO.</div>
+  <nav>
+    <a href="#shop">Shop</a>
+    <a href="#join">Join</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <h1>Quietly good taste.</h1>
+  <p>Fashion, accessories and gadget essentials, curated — not dumped on you. New pieces, added as we find them worth your time.</p>
+  <a href="#shop" class="btn">Browse the edit</a>
+</div>
+
+<section id="shop">
+  <h2>The Current Edit</h2>
+  <div class="grid" id="productGrid"></div>
+</section>
+
+<section class="signup" id="join">
+  <h2 style="margin-bottom:6px;">Join the list</h2>
+  <p style="color:var(--sub); font-family:Arial,sans-serif; font-size:14px;">First look at new pieces, before anyone else.</p>
+  <form id="signupForm">
+    <input type="email" id="emailInput" placeholder="you@email.com" required>
+    <button class="btn" type="submit">Join</button>
+  </form>
+  <div class="msg" id="signupMsg"></div>
+</section>
+
+<footer>Linden & Co. — curated, not mass-produced.</footer>
+
+<button id="adminBtn" style="display:none;">+ Add product</button>
+<div id="adminPanel">
+  <div class="panelBox">
+    <h3>Add a product</h3>
+    <label>Product name</label>
+    <input id="pName" placeholder="e.g. Woven Leather Card Holder">
+    <label>Price (displayed as typed)</label>
+    <input id="pPrice" placeholder="e.g. ₦18,500">
+    <label>Category</label>
+    <input id="pCat" placeholder="e.g. Accessories">
+    <label>Supplier/reference link (for your own notes — not shown to customers)</label>
+    <input id="pLink" placeholder="https://1688.com/... or AliExpress link">
+    <div class="panelRow">
+      <button class="btn" id="pSave" style="flex:1;">Save product</button>
+      <button class="btn outline" id="pClose" style="flex:1;">Close</button>
+    </div>
+    <div class="msg" id="pMsg"></div>
+    <div class="existing" id="existingList"></div>
+  </div>
+</div>
+
+<script>
+let PRODUCTS = [
+  {name:"Classic Trench Coat", price:"₦42,000", category:"Clothing", link:""},
+  {name:"Woven Leather Wallet", price:"₦14,500", category:"Accessories", link:""},
+  {name:"Magnetic Phone Stand", price:"₦7,200", category:"Gadget Accessories", link:""}
+];
+let artifactApi=null, userApi=null, dbApi=null, isOwner=false;
+
+function renderProducts(){
+  const grid=document.getElementById('productGrid');
+  if(!PRODUCTS.length){grid.innerHTML='<div class="empty">New pieces coming soon.</div>';return;}
+  grid.innerHTML=PRODUCTS.map((p,i)=>`
+    <div class="card">
+      <div class="thumb">${(p.name||'').split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase()}</div>
+      <div class="info">
+        <div class="cat">${esc(p.category||'')}</div>
+        <h3>${esc(p.name||'')}</h3>
+        <p class="price">${esc(p.price||'')}</p>
+      </div>
+    </div>`).join('');
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+function buildFullHtml(){
+  return document.documentElement.outerHTML
+    .replace(/let PRODUCTS = .*?;/, 'let PRODUCTS = '+JSON.stringify(PRODUCTS)+';');
+}
+
+async function initCapabilities(){
+  try{
+    userApi = await claude.use('user');
+    if(userApi){ isOwner = userApi.isOwner ? userApi.isOwner() : false; }
+  }catch(e){}
+  try{ artifactApi = await claude.use('artifact'); }catch(e){}
+  try{ dbApi = await claude.use('db'); }catch(e){}
+  if(isOwner){
+    document.getElementById('adminBtn').style.display='block';
+  }
+}
+
+document.getElementById('adminBtn').addEventListener('click',()=>{
+  document.getElementById('adminPanel').classList.add('open');
+  renderExisting();
+});
+document.getElementById('pClose').addEventListener('click',()=>{
+  document.getElementById('adminPanel').classList.remove('open');
+});
+function renderExisting(){
+  const el=document.getElementById('existingList');
+  if(!PRODUCTS.length){el.innerHTML='';return;}
+  el.innerHTML='<div class="msg">Current products:</div><ul>'+PRODUCTS.map((p,i)=>
+    `<li>${esc(p.name)} <button data-i="${i}" class="rm">Remove</button></li>`).join('')+'</ul>';
+  el.querySelectorAll('.rm').forEach(btn=>btn.addEventListener('click', async (e)=>{
+    const i=parseInt(e.target.dataset.i,10);
+    PRODUCTS.splice(i,1);
+    await saveAndPublish('Product removed.');
+    renderExisting();
+  }));
+}
+document.getElementById('pSave').addEventListener('click', async ()=>{
+  const name=document.getElementById('pName').value.trim();
+  const price=document.getElementById('pPrice').value.trim();
+  const cat=document.getElementById('pCat').value.trim();
+  const link=document.getElementById('pLink').value.trim();
+  if(!name||!price){document.getElementById('pMsg').textContent='Name and price are required.';return;}
+  PRODUCTS.push({name,price,category:cat,link});
+  document.getElementById('pName').value='';
+  document.getElementById('pPrice').value='';
+  document.getElementById('pCat').value='';
+  document.getElementById('pLink').value='';
+  await saveAndPublish('Saved. Publishing to your live page…');
+  renderExisting();
+});
+async function saveAndPublish(msg){
+  renderProducts();
+  document.getElementById('pMsg').textContent=msg;
+  if(artifactApi){
+    try{
+      await artifactApi.publish(buildFullHtml());
+      document.getElementById('pMsg').textContent='Live — customers can see this now.';
+    }catch(e){
+      document.getElementById('pMsg').textContent='Could not publish automatically. Changes are visible to you only for now.';
+    }
+  }
+}
+
+document.getElementById('signupForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const email=document.getElementById('emailInput').value.trim();
+  const msgEl=document.getElementById('signupMsg');
+  if(dbApi){
+    try{
+      await dbApi.collection('subscribers').doc(email.replace(/[^a-zA-Z0-9]/g,'_')).set({email, joinedAt:Date.now()});
+      msgEl.textContent="You're on the list.";
+      e.target.reset();
+      return;
+    }catch(err){}
+  }
+  msgEl.textContent="Thanks! (Connect this form to your Brevo list to fully capture signups.)";
+  e.target.reset();
+});
+
+renderProducts();
+initCapabilities();
+</script>
+</body>
+</html>
